@@ -4,45 +4,54 @@ import axios from "axios";
 function Login({ setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
 
-  const [error, setError] = useState("");
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    try {
-      const res = await axios.post("https://jobserve-hghp.onrender.com/auth/login", {
-        email,
-        password,
-      });
+    const url = isRegister
+      ? "https://your-backend-url.onrender.com/auth/register"
+      : "https://your-backend-url.onrender.com/auth/login";
 
+    const res = await axios.post(url, { email, password });
+
+    if (!isRegister) {
       localStorage.setItem("token", res.data.token);
       setToken(res.data.token);
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Error logging in. Please check your credentials.");
-      }
+    } else {
+      alert("Registered! Now login.");
+      setIsRegister(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div>
+      <h2>{isRegister ? "Register" : "Login"}</h2>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">
+          {isRegister ? "Register" : "Login"}
+        </button>
+      </form>
+
+      <p onClick={() => setIsRegister(!isRegister)} style={{ cursor: "pointer" }}>
+        {isRegister
+          ? "Already have account? Login"
+          : "New user? Register"}
+      </p>
+    </div>
   );
 }
 
