@@ -55,10 +55,10 @@ function App() {
       {/* MAIN CONTENT */}
       <div className="max-w-2xl mx-auto mt-6 p-4 bg-white rounded shadow">
 
-        <JobForm fetchJobs={fetchJobs} />
+        <JobForm fetchJobs={fetchJobs} token={token} />
 
         <select
-          className="mt-4 p-2 border w-full rounded"
+          className="mt-4 p-2 border w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="All">All</option>
@@ -67,7 +67,7 @@ function App() {
           <option value="Rejected">Rejected</option>
         </select>
 
-        <JobList jobs={filteredJobs} fetchJobs={fetchJobs} />
+        <JobList jobs={filteredJobs} fetchJobs={fetchJobs} token={token} />
       </div>
     </div>
   );
