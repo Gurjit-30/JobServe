@@ -12,7 +12,7 @@ function App() {
   const fetchJobs = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await axios.get("http://localhost:5000/jobs", {
+      const res = await axios.get("https://jobserve-hghp.onrender.com/jobs", {
         headers: { Authorization: token }
       });
       setJobs(res.data);

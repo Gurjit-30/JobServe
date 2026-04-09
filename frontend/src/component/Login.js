@@ -12,7 +12,7 @@ function Login({ setToken }) {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", {
+      const res = await axios.post("https://jobserve-hghp.onrender.com/auth/login", {
         email,
         password,
       });

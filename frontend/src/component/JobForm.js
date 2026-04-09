@@ -8,7 +8,7 @@ function JobForm({ fetchJobs, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost:5000/jobs/add", {
+    await axios.post("https://jobserve-hghp.onrender.com/jobs/add", {
       company,
       role,
     }, {

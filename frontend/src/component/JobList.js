@@ -4,20 +4,20 @@ import axios from "axios";
 function JobList({ jobs, fetchJobs, token }) {
 
   const deleteJob = async (id) => {
-    await axios.delete(`http://localhost:5000/jobs/${id}`, {
+    await axios.delete(`https://jobserve-hghp.onrender.com/jobs/${id}`, {
       headers: { Authorization: token }
     });
     fetchJobs();
   };
 
   const updateStatus = async (id, status) => {
-    await axios.put(`http://localhost:5000/jobs/${id}`, { status }, {
+    await axios.put(`https://jobserve-hghp.onrender.com/jobs/${id}`, { status }, {
       headers: { Authorization: token }
     });
     fetchJobs();
   };
   const updateNotes = async (id, notes) => {
-    await axios.put(`http://localhost:5000/jobs/${id}`, { notes }, {
+    await axios.put(`https://jobserve-hghp.onrender.com/jobs/${id}`, { notes }, {
       headers: { Authorization: token }
     });
     fetchJobs();
