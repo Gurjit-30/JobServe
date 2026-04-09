@@ -36,26 +36,29 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-5">
-      <h1 className="text-3xl font-bold text-center mb-5">
-        Smart Placement Tracker
-      </h1>
+    <div className="min-h-screen bg-gray-100">
 
-      <div className="max-w-xl mx-auto bg-white p-5 rounded shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Manage Jobs</h2>
-          <button
-            className="bg-red-500 text-white px-3 py-1 rounded"
-            onClick={() => { localStorage.removeItem("token"); setToken(null); }}
-          >
-            Logout
-          </button>
-        </div>
+      {/* NAVBAR */}
+      <div className="bg-blue-600 text-white p-4 flex justify-between">
+        <h1 className="text-xl font-bold">Smart Placement Tracker</h1>
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            setToken(null);
+          }}
+          className="bg-red-500 px-3 py-1 rounded"
+        >
+          Logout
+        </button>
+      </div>
 
-        <JobForm fetchJobs={fetchJobs} token={token} />
+      {/* MAIN CONTENT */}
+      <div className="max-w-2xl mx-auto mt-6 p-4 bg-white rounded shadow">
+
+        <JobForm fetchJobs={fetchJobs} />
 
         <select
-          className="mt-3 p-2 border w-full"
+          className="mt-4 p-2 border w-full rounded"
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="All">All</option>
@@ -64,7 +67,7 @@ function App() {
           <option value="Rejected">Rejected</option>
         </select>
 
-        <JobList jobs={filteredJobs} fetchJobs={fetchJobs} token={token} />
+        <JobList jobs={filteredJobs} fetchJobs={fetchJobs} />
       </div>
     </div>
   );
