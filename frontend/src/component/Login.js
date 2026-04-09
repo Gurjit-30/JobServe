@@ -10,8 +10,8 @@ function Login({ setToken }) {
     e.preventDefault();
 
     const url = isRegister
-      ? "https://your-backend-url.onrender.com/auth/register"
-      : "https://your-backend-url.onrender.com/auth/login";
+      ? "https://jobserve-hghp.onrender.com/auth/register"
+      : "https://jobserve-hghp.onrender.com/auth/login";
 
     const res = await axios.post(url, { email, password });
 
