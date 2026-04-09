@@ -7,7 +7,9 @@ const jobRoutes = require('./routes/jobRoutes');
 const app = express();
 //from express package we have called express function which will return a application object (main part )
 app.use(cors({
-    origin: "*"
+    origin: "https://job-serve.vercel.app", // Your specific Vercel URL from the error
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
 }));
 //cors is used to allow cross origin resource sharing (it allows us to access our backend api from different domain or port)
 app.use(express.json());
