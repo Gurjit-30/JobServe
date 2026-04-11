@@ -22,8 +22,11 @@ mongoose.connect('mongodb+srv://GurjitSingh:JeetaS12@smartjob.kmt93ug.mongodb.ne
 app.use('/jobs', jobRoutes);
 //we are using jobroutes for all the routes that start with /job
 const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 app.use("/auth", authRoutes);
+app.use("/ai", aiRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

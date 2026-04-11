@@ -14,7 +14,7 @@ function ResumeAnalyzer() {
         formData.append("role", role);
 
         const res = await axios.post(
-            "https://your-backend-url.onrender.com/ai/analyze",
+            "https://jobserve-hghp.onrender.com/ai/analyze",
             formData
         );
 
