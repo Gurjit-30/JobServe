@@ -27,6 +27,7 @@ exports.analyzeResume = async (req, res) => {
         res.json({ result: response });
 
     } catch (err) {
-        res.status(500).json({ message: "AI error" });
+        console.error("AI Error:", err);
+        res.status(500).json({ message: "AI error", details: err.message });
     }
 };
