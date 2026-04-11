@@ -9,16 +9,28 @@ function ResumeAnalyzer() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!file) {
+            alert("Please select a resume file first.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("resume", file);
         formData.append("role", role);
 
-        const res = await axios.post(
-            "https://jobserve-hghp.onrender.com/ai/analyze",
-            formData
-        );
+        try {
+            const res = await axios.post(
+                "https://jobserve-hghp.onrender.com/ai/analyze",
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
 
-        setResult(res.data.result);
+            setResult(res.data.result);
+        } catch (err) {
+            console.error(err);
+            const backendError = err.response?.data?.details || err.response?.data?.message || err.message;
+            setResult("Error analyzing resume: " + backendError);
+        }
     };
 
     return (
