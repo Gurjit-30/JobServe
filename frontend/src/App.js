@@ -42,7 +42,7 @@ function App() {
         <div className="max-w-4xl mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Placement Tracker</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">JobServe</h1>
           </div>
           <button
             onClick={() => {
