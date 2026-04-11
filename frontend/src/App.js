@@ -3,7 +3,7 @@ import axios from "axios";
 import JobForm from "./component/JobForm";
 import JobList from "./component/JobList";
 import Login from "./component/Login";
-
+import ResumeAnalyzer from "./component/ResumeAnalyzer";
 function App() {
   const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState("All");  // ← already have this
@@ -68,6 +68,7 @@ function App() {
         </select>
 
         <JobList jobs={filteredJobs} fetchJobs={fetchJobs} token={token} />
+        <ResumeAnalyzer />
       </div>
     </div>
   );
