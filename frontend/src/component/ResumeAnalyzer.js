@@ -39,6 +39,7 @@ function ResumeAnalyzer() {
 
             <input
                 type="file"
+                accept=".pdf"
                 onChange={(e) => setFile(e.target.files[0])}
             />
 
