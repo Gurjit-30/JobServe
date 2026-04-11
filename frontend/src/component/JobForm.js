@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 function JobForm({ fetchJobs, token }) {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
@@ -8,7 +10,7 @@ function JobForm({ fetchJobs, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post("https://jobserve-hghp.onrender.com/jobs/add", {
+    await axios.post(`${API}/jobs/add`, {
       company,
       role,
     }, {

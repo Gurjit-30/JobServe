@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 // ─── Rank Config (Call of Duty-style tiers) ──────────────────────────────────
 const RANKS = [
   {
@@ -230,7 +232,7 @@ function ResumeAnalyzer() {
 
     try {
       const res = await axios.post(
-        "https://jobserve-hghp.onrender.com/ai/analyze",
+        `${API}/ai/analyze`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

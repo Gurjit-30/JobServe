@@ -1,23 +1,26 @@
 import React from "react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 function JobList({ jobs, fetchJobs, token }) {
 
   const deleteJob = async (id) => {
-    await axios.delete(`https://jobserve-hghp.onrender.com/jobs/${id}`, {
+    await axios.delete(`${API}/jobs/${id}`, {
       headers: { Authorization: token }
     });
     fetchJobs();
   };
 
   const updateStatus = async (id, status) => {
-    await axios.put(`https://jobserve-hghp.onrender.com/jobs/${id}`, { status }, {
+    await axios.put(`${API}/jobs/${id}`, { status }, {
       headers: { Authorization: token }
     });
     fetchJobs();
   };
+
   const updateNotes = async (id, notes) => {
-    await axios.put(`https://jobserve-hghp.onrender.com/jobs/${id}`, { notes }, {
+    await axios.put(`${API}/jobs/${id}`, { notes }, {
       headers: { Authorization: token }
     });
     fetchJobs();
@@ -36,7 +39,7 @@ function JobList({ jobs, fetchJobs, token }) {
               <h3 className="text-lg font-bold text-gray-100">{job.company}</h3>
               <p className="text-emerald-400 text-sm font-medium">{job.role}</p>
             </div>
-            
+
             {/* Status Badge Select */}
             <select
               value={job.status}
@@ -63,11 +66,13 @@ function JobList({ jobs, fetchJobs, token }) {
 
           {/* Actions */}
           <div className="flex justify-end mt-auto pt-2">
-            <button 
+            <button
               onClick={() => deleteJob(job._id)}
               className="text-xs font-semibold text-gray-500 hover:text-red-400 px-3 py-1.5 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
               Delete
             </button>
           </div>
