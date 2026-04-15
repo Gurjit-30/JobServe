@@ -46,3 +46,9 @@ coverage/
 *.key
 *.cert
 dummy.pdf
+
+# Prevent credentials
+*.json
+!package.json
+!package-lock.json
+!manifest.json

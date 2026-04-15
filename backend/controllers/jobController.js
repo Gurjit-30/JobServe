@@ -1,22 +1,19 @@
 const Job = require('../models/job');
 
-//we are importing the job model from the models folder and we are using it to perform CRUD operations on the job collection in the database
 exports.addJob = async (req, res) => {
-    try {//if we able to save data into db
-        //data is store in req
-
+    try {
+        const { company, role, status, notes, jobUrl } = req.body;
         const job = new Job({
-            ...req.body,
+            company,
+            role,
+            status,
+            notes,
+            jobUrl,
             userId: req.userId
         });
-
         await job.save();
-        //will make sure that we proceed next until our data is stored in db
         res.json(job);
-
-
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
@@ -31,21 +28,24 @@ exports.getJob = async (req, res) => {
 };
 exports.delJob = async (req, res) => {
     try {
-        await Job.findByIdAndDelete(req.params.id);
+        const job = await Job.findOneAndDelete({ _id: req.params.id, userId: req.userId });
+        if (!job) return res.status(404).json({ message: "Job not found or unauthorized" });
         res.json({ message: "Job deleted" });
-    }
-    catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 exports.updJob = async (req, res) => {
     try {
-        const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { company, role, status, notes, jobUrl } = req.body;
+        const job = await Job.findOneAndUpdate(
+            { _id: req.params.id, userId: req.userId }, 
+            { company, role, status, notes, jobUrl }, 
+            { new: true }
+        );
+        if (!job) return res.status(404).json({ message: "Job not found or unauthorized" });
         res.json(job);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};

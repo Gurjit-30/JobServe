@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api";
 import AnimatedBackground from "./AnimatedBackground";
-
-const API = process.env.REACT_APP_API_URL;
+import { toast } from "react-hot-toast";
 
 // ── SVG Icons ─────────────────────────────────────────────────────────────────
 const GoogleIcon = () => (
@@ -32,43 +31,39 @@ function Login({ setToken }) {
     if (oauthToken) {
       localStorage.setItem("token", oauthToken);
       setToken(oauthToken);
-      // Clean up URL
       window.history.replaceState({}, document.title, "/");
+      toast.success("Signed in successfully!");
     }
     if (authError) {
-      setError("OAuth sign-in failed. Please try again.");
+      toast.error("OAuth sign-in failed. Please try again.");
       window.history.replaceState({}, document.title, "/");
     }
   }, [setToken]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
     try {
-      const url = isRegister
-        ? `${API}/auth/register`
-        : `${API}/auth/login`;
-
-      const res = await axios.post(url, { email, password });
+      const url = isRegister ? `/auth/register` : `/auth/login`;
+      const res = await api.post(url, { email, password });
 
       if (!isRegister) {
         localStorage.setItem("token", res.data.token);
         setToken(res.data.token);
+        toast.success("Welcome back!");
       } else {
-        setError("");
-        alert("Registered! Now sign in.");
+        toast.success("Registered! Now sign in.");
         setIsRegister(false);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Try again.");
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = () => {
-    window.location.href = `${API}/auth/google`;
+    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
   };
 
 
@@ -139,11 +134,7 @@ function Login({ setToken }) {
             />
           </div>
 
-          {error && (
-            <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 flex items-center gap-2">
-              <span>⚠</span> {error}
-            </div>
-          )}
+
 
           <button
             type="submit"
@@ -171,7 +162,7 @@ function Login({ setToken }) {
         {/* Toggle */}
         <div className="text-center border-t border-white/5 pt-5">
           <p
-            onClick={() => { setIsRegister(!isRegister); setError(""); }}
+            onClick={() => { setIsRegister(!isRegister); }}
             className="text-sm font-medium text-emerald-500 hover:text-emerald-400 cursor-pointer transition-colors duration-200"
           >
             {isRegister

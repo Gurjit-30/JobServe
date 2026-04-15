@@ -61,3 +61,18 @@ Scoring guide:
         res.status(500).json({ message: "AI error", details: err.message });
     }
 };
+
+exports.generateCoverLetter = async (req, res) => {
+    try {
+        const { role, company } = req.body;
+        if (!role || !company) return res.status(400).json({ message: "Role and company required" });
+
+        const prompt = `You are an expert career coach. Write a professional, concise, and modern cover letter for the role of "${role}" at "${company}". Keep it highly engaging, confident, under 3 paragraphs, and leave placeholders for [My Name], [Contact Info], and [Date].`;
+        
+        const result = await model.generateContent(prompt);
+        res.json({ coverLetter: result.response.text().trim() });
+    } catch (err) {
+        console.error("Cover Letter AI Error:", err);
+        res.status(500).json({ message: "Failed to generate cover letter", details: err.message });
+    }
+};

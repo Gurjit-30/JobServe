@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
-
-const API = process.env.REACT_APP_API_URL;
+import api from "../api";
 
 // ─── Rank Config (Call of Duty-style tiers) ──────────────────────────────────
 const RANKS = [
@@ -231,8 +229,8 @@ function ResumeAnalyzer() {
     setResult(null);
 
     try {
-      const res = await axios.post(
-        `${API}/ai/analyze`,
+      const res = await api.post(
+        `/ai/analyze`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

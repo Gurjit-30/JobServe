@@ -6,6 +6,7 @@ const passport = require("../config/passport");
 // ── Email / Password ──────────────────────────────────────────────────────────
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.get("/me", require("../middleware/auth"), authController.getMe);
 
 // ── Google OAuth ──────────────────────────────────────────────────────────────
 router.get(

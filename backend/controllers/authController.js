@@ -49,9 +49,18 @@ exports.login = async (req, res) => {
   }
 };
 
-// Called after OAuth success — redirects user to frontend with JWT in URL
 exports.oauthCallback = (req, res) => {
   const token = req.user?.token;
   if (!token) return res.redirect(`${process.env.CLIENT_URL}?auth_error=true`);
   res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

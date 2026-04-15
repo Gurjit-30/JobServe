@@ -1,29 +1,64 @@
-import React from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import api from "../api";
+import { toast } from "react-hot-toast";
+import { formatDistanceToNow } from "date-fns";
+import { FiExternalLink, FiCpu, FiTrash2 } from "react-icons/fi";
 
-const API = process.env.REACT_APP_API_URL;
+function JobList({ jobs, fetchJobs }) {
 
-function JobList({ jobs, fetchJobs, token }) {
+  const [generating, setGenerating] = useState(null);
 
   const deleteJob = async (id) => {
-    await axios.delete(`${API}/jobs/${id}`, {
-      headers: { Authorization: token }
-    });
-    fetchJobs();
+    try {
+      await api.delete(`/jobs/${id}`);
+      toast.success("Job deleted");
+      fetchJobs();
+    } catch(err) {
+      toast.error("Error deleting job");
+    }
   };
 
   const updateStatus = async (id, status) => {
-    await axios.put(`${API}/jobs/${id}`, { status }, {
-      headers: { Authorization: token }
-    });
-    fetchJobs();
+    try {
+      await api.put(`/jobs/${id}`, { status });
+      toast.success(`Status updated to ${status}`);
+      fetchJobs();
+    } catch (err) {
+      toast.error("Error updating status");
+    }
   };
 
   const updateNotes = async (id, notes) => {
-    await axios.put(`${API}/jobs/${id}`, { notes }, {
-      headers: { Authorization: token }
-    });
-    fetchJobs();
+    try {
+        await api.put(`/jobs/${id}`, { notes });
+        toast.success("Notes saved");
+        fetchJobs();
+    } catch (err) {
+        toast.error("Error saving notes");
+    }
+  };
+
+  const generateCoverLetter = async (job) => {
+    setGenerating(job._id);
+    try {
+      const res = await api.post(`/ai/cover-letter`, {
+        role: job.role,
+        company: job.company
+      });
+      console.log(res.data);
+      // For now we will download it as a text file
+      const blob = new Blob([res.data.coverLetter], { type: "text/plain" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `CoverLetter_${job.company.replace(/\s+/g, "")}.txt`;
+      a.click();
+      toast.success("Cover letter generated and downloaded!");
+    } catch(err) {
+      toast.error("Failed to generate cover letter. Did you upload a resume to the Ranker first?");
+    } finally {
+      setGenerating(null);
+    }
   };
 
   return (
@@ -35,9 +70,21 @@ function JobList({ jobs, fetchJobs, token }) {
         >
           {/* Header */}
           <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-bold text-gray-100">{job.company}</h3>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-lg font-bold text-gray-100 flex items-center gap-2">
+                {job.company} 
+                {job.jobUrl && (
+                  <a href={job.jobUrl} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-emerald-400">
+                    <FiExternalLink />
+                  </a>
+                )}
+              </h3>
               <p className="text-emerald-400 text-sm font-medium">{job.role}</p>
+              {job.appliedAt && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Applied {formatDistanceToNow(new Date(job.appliedAt), { addSuffix: true })}
+                </p>
+              )}
             </div>
 
             {/* Status Badge Select */}
@@ -65,14 +112,20 @@ function JobList({ jobs, fetchJobs, token }) {
           />
 
           {/* Actions */}
-          <div className="flex justify-end mt-auto pt-2">
+          <div className="flex justify-between items-center mt-auto pt-2">
+            <button
+              onClick={() => generateCoverLetter(job)}
+              disabled={generating === job._id}
+              className="text-xs font-semibold text-gray-400 hover:text-emerald-400 px-3 py-1.5 rounded-md hover:bg-emerald-500/10 transition-colors flex items-center gap-1"
+            >
+              <FiCpu className={generating === job._id ? "animate-spin text-emerald-400" : ""} />
+              {generating === job._id ? "Drafting..." : "AI Cover Letter"}
+            </button>
             <button
               onClick={() => deleteJob(job._id)}
               className="text-xs font-semibold text-gray-500 hover:text-red-400 px-3 py-1.5 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-1"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <FiTrash2 />
               Delete
             </button>
           </div>
