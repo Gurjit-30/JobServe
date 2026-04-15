@@ -19,7 +19,6 @@ function Login({ setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Handle OAuth redirect — backend sends ?token=JWT back to CLIENT_URL
