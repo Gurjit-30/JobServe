@@ -12,55 +12,8 @@
 .app-bg {
   min-height: 100vh;
   background-color: #060811;
-  background-image:
-    /* subtle dot grid */
-    radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px),
-    /* deep teal glow top-right */
-    radial-gradient(ellipse 60% 50% at 80% 10%, rgba(0, 210, 140, 0.08) 0%, transparent 70%),
-    /* deep indigo glow bottom-left */
-    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(99, 60, 255, 0.07) 0%, transparent 70%),
-    /* mid blue tint center */
-    radial-gradient(ellipse 80% 40% at 50% 50%, rgba(30, 80, 180, 0.04) 0%, transparent 80%);
-  background-size: 28px 28px, 100% 100%, 100% 100%, 100% 100%;
   position: relative;
-}
-
-/* Animated floating orbs */
-.app-bg::before,
-.app-bg::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-}
-.app-bg::before {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(0, 210, 140, 0.09) 0%, transparent 70%);
-  top: -100px;
-  right: -100px;
-  animation: orb-drift-a 18s ease-in-out infinite alternate;
-}
-.app-bg::after {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(99, 60, 255, 0.08) 0%, transparent 70%);
-  bottom: -80px;
-  left: -80px;
-  animation: orb-drift-b 22s ease-in-out infinite alternate;
-}
-
-@keyframes orb-drift-a {
-  0%   { transform: translate(0, 0) scale(1); }
-  50%  { transform: translate(-60px, 80px) scale(1.1); }
-  100% { transform: translate(40px, -50px) scale(0.95); }
-}
-@keyframes orb-drift-b {
-  0%   { transform: translate(0, 0) scale(1); }
-  50%  { transform: translate(80px, -60px) scale(1.15); }
-  100% { transform: translate(-40px, 40px) scale(0.9); }
+  overflow: hidden;
 }
 
 /* ── Glass Card ──────────────────────────────────────────────────────────────── */

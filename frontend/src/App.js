@@ -4,6 +4,7 @@ import JobForm from "./component/JobForm";
 import JobList from "./component/JobList";
 import Login from "./component/Login";
 import ResumeAnalyzer from "./component/ResumeAnalyzer";
+import AnimatedBackground from "./component/AnimatedBackground";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -55,6 +56,7 @@ function App() {
 
   return (
     <div className="app-bg text-gray-100">
+      <AnimatedBackground />
       {/* NAVBAR */}
       <nav className="navbar-glass p-4 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto flex justify-between items-center px-2">

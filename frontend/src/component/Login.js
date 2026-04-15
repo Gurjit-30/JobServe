@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import AnimatedBackground from "./AnimatedBackground";
 
 const API = process.env.REACT_APP_API_URL;
 
@@ -73,6 +74,7 @@ function Login({ setToken }) {
 
   return (
     <div className="app-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <AnimatedBackground />
       {/* Background orbs come from CSS .app-bg ::before/::after */}
 
       <div className="max-w-md w-full space-y-6 glass-card gradient-border p-10 animate-fade-in-scale relative z-10">
