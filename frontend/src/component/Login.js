@@ -72,11 +72,10 @@ function Login({ setToken }) {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+    <div className="app-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Background orbs come from CSS .app-bg ::before/::after */}
 
-      <div className="max-w-md w-full space-y-6 bg-gray-900 border border-gray-800 p-10 rounded-2xl shadow-2xl relative z-10">
+      <div className="max-w-md w-full space-y-6 glass-card gradient-border p-10 animate-fade-in-scale relative z-10">
         {/* Logo + Title */}
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-2xl bg-emerald-500/10 mb-4 border border-emerald-500/20">
@@ -105,9 +104,9 @@ function Login({ setToken }) {
 
         {/* Divider */}
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-gray-800" />
+          <div className="flex-1 h-px bg-white/5" />
           <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">or</span>
-          <div className="flex-1 h-px bg-gray-800" />
+          <div className="flex-1 h-px bg-white/5" />
         </div>
 
         {/* Email / Password Form */}
@@ -118,7 +117,7 @@ function Login({ setToken }) {
               id="email-address"
               type="email"
               required
-              className="appearance-none block w-full px-4 py-3 bg-gray-800 border border-gray-700 placeholder-gray-500 text-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all text-sm"
+              className="input-dark appearance-none block w-full px-4 py-3 text-sm"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -131,7 +130,7 @@ function Login({ setToken }) {
               id="password"
               type="password"
               required
-              className="appearance-none block w-full px-4 py-3 bg-gray-800 border border-gray-700 placeholder-gray-500 text-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all text-sm"
+              className="input-dark appearance-none block w-full px-4 py-3 text-sm"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -150,7 +149,7 @@ function Login({ setToken }) {
             className={`w-full flex justify-center py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 ${
               loading
                 ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-                : "text-gray-900 bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]"
+                : "btn-glow text-[#060811]"
             }`}
           >
             {loading ? (
@@ -168,7 +167,7 @@ function Login({ setToken }) {
         </form>
 
         {/* Toggle */}
-        <div className="text-center border-t border-gray-800 pt-5">
+        <div className="text-center border-t border-white/5 pt-5">
           <p
             onClick={() => { setIsRegister(!isRegister); setError(""); }}
             className="text-sm font-medium text-emerald-500 hover:text-emerald-400 cursor-pointer transition-colors duration-200"
