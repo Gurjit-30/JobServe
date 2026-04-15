@@ -231,8 +231,7 @@ function ResumeAnalyzer() {
     try {
       const res = await api.post(
         `/ai/analyze`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        formData
       );
       setResult(res.data);
     } catch (err) {
