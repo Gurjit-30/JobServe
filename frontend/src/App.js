@@ -64,7 +64,7 @@ function App() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "JobServe_Pipeline.csv";
+    a.download = "Jobserv_Pipeline.csv";
     a.click();
     toast.success("Export downloaded");
   };
@@ -104,7 +104,7 @@ function App() {
             <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">JobServe</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Jobserv</h1>
           </div>
           <div className="flex items-center gap-4">
             {user && (

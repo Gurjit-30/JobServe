@@ -53,7 +53,7 @@ app.use("/auth", authRoutes);
 app.use("/ai", aiRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
-app.get("/", (req, res) => res.json({ status: "JobServe API running 🚀" }));
+app.get("/", (req, res) => res.json({ status: "Jobserv API running 🚀" }));
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
