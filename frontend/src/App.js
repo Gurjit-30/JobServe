@@ -6,6 +6,7 @@ import JobList from "./component/JobList";
 import Login from "./component/Login";
 import ResumeAnalyzer from "./component/ResumeAnalyzer";
 import AnimatedBackground from "./component/AnimatedBackground";
+import CodeEditor from "./component/CodeEditor";
 
 function App() {
   const [jobs, setJobs] = useState([]);
@@ -200,6 +201,9 @@ function App() {
 
         {/* AI Resume Ranker */}
         <ResumeAnalyzer />
+
+        {/* Code Playground — Monaco Editor */}
+        <CodeEditor />
 
       </main>
     </div>
