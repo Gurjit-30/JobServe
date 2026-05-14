@@ -6,9 +6,10 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const passport = require("./config/passport");
 
-const jobRoutes = require("./routes/jobRoutes");
+const jobRoutes  = require("./routes/jobRoutes");
 const authRoutes = require("./routes/authRoutes");
-const aiRoutes = require("./routes/aiRoutes");
+const aiRoutes   = require("./routes/aiRoutes");
+const codeRoutes = require("./routes/codeRoutes");
 
 const app = express();
 
@@ -51,6 +52,7 @@ mongoose
 app.use("/jobs", jobRoutes);
 app.use("/auth", authRoutes);
 app.use("/ai", aiRoutes);
+app.use("/run-code", codeRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ status: "Jobserv API running 🚀" }));
