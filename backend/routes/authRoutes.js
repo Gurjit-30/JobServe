@@ -16,10 +16,21 @@ router.get(
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: `${process.env.CLIENT_URL}?auth_error=true`,
-  }),
+  (req, res, next) => {
+    passport.authenticate("google", { session: false }, (err, user, info) => {
+      if (err) {
+        console.error("Google OAuth Error:", err);
+        const clientUrl = process.env.CLIENT_URL || "";
+        return res.redirect(`${clientUrl}?auth_error=true`);
+      }
+      if (!user) {
+        const clientUrl = process.env.CLIENT_URL || "";
+        return res.redirect(`${clientUrl}?auth_error=true`);
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   authController.oauthCallback
 );
 

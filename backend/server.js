@@ -13,6 +13,9 @@ const codeRoutes = require("./routes/codeRoutes");
 
 const app = express();
 
+// Trust reverse proxy (important for Render, Heroku to correctly identify HTTPS)
+app.set("trust proxy", 1);
+
 // ── Security Headers ──────────────────────────────────────────────────────────
 app.use(helmet());
 
