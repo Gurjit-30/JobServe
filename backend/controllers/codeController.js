@@ -26,6 +26,20 @@ const LANGUAGE_IDS = {
   typescript: 74,   // TypeScript 3.7.4
 };
 
+// ── Mock Database for Problems ───────────────────────────────────────────────
+// In a real app, you'd pull these from your MongoDB.
+const MOCK_PROBLEMS = {
+  "two-sum": [
+    { input: "2\n3", expectedOutput: "5\n" },
+    { input: "10\n20", expectedOutput: "30\n" },
+    { input: "-5\n5", expectedOutput: "0\n" }
+  ],
+  "reverse-string": [
+    { input: "hello", expectedOutput: "olleh\n" },
+    { input: "world", expectedOutput: "dlrow\n" }
+  ]
+};
+
 // ── Judge0 endpoint — public CE instance (rate-limited at 100 req/day) ────
 // Override with JUDGE0_API_URL + JUDGE0_API_KEY in .env for a private host.
 const JUDGE0_BASE_URL =
@@ -134,5 +148,119 @@ exports.runCode = async (req, res) => {
     return res.status(500).json({
       error: judgeMsg || "Internal server error during code execution.",
     });
+  }
+};
+
+// ── Submit Code (Run against hidden test cases) ──────────────────────────────
+exports.submitCode = async (req, res) => {
+  try {
+    const { language = "python", code = "", problemId } = req.body;
+
+    const languageId = LANGUAGE_IDS[language.toLowerCase()];
+    if (!languageId) {
+      return res.status(400).json({ error: `Language not supported: ${language}` });
+    }
+
+    if (!problemId || !MOCK_PROBLEMS[problemId]) {
+      return res.status(404).json({ error: "Problem not found. Please send a valid problemId." });
+    }
+
+    const testCases = MOCK_PROBLEMS[problemId];
+    const headers = buildHeaders();
+
+    // Loop through each test case sequentially
+    // Doing them one by one is kinder to the free API rate limits!
+    for (let i = 0; i < testCases.length; i++) {
+      let currentTest = testCases[i];
+      
+      let submissionPayload = {
+        language_id: languageId,
+        source_code: b64encode(code),
+        stdin: b64encode(currentTest.input),
+        expected_output: b64encode(currentTest.expectedOutput),
+        cpu_time_limit: 2, 
+        memory_limit: 128000,
+      };
+
+      // 1. Send the submission to Judge0
+      let sendRes = await axios.post(
+        `${JUDGE0_BASE_URL}/submissions?base64_encoded=true&wait=false`,
+        submissionPayload,
+        { headers, timeout: 15000 }
+      );
+
+      let token = sendRes.data?.token;
+      if (!token) {
+        throw new Error("No token returned from Judge0.");
+      }
+
+      // 2. Poll Judge0 until it's done processing
+      let judgeResult = null;
+      let maxAttempts = 15;
+      
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        await sleep(1000); // Give it a second to think
+        
+        let checkRes = await axios.get(
+          `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=true&fields=status,compile_output,stdout,stderr`,
+          { headers, timeout: 10000 }
+        );
+
+        let statusId = checkRes.data?.status?.id;
+        
+        // 1 = In Queue, 2 = Processing
+        if (statusId === 1 || statusId === 2) {
+          continue; 
+        }
+
+        judgeResult = checkRes.data;
+        break;
+      }
+
+      // If we never got an answer...
+      if (!judgeResult) {
+        return res.status(504).json({ verdict: "Time Limit Exceeded", details: "Execution took too long." });
+      }
+
+      let finalStatusId = judgeResult.status?.id;
+
+      // Handle common bad outcomes
+      if (finalStatusId === 6) {
+        return res.json({ verdict: "Compilation Error", details: b64decode(judgeResult.compile_output) });
+      }
+      
+      if (finalStatusId === 5) {
+        return res.json({ verdict: "Time Limit Exceeded", testCaseIndex: i + 1 });
+      }
+      
+      if (finalStatusId >= 7 && finalStatusId <= 12) {
+        return res.json({ verdict: "Runtime Error", details: b64decode(judgeResult.stderr) });
+      }
+
+      if (finalStatusId === 4) {
+        return res.json({ 
+          verdict: "Wrong Answer", 
+          testCaseIndex: i + 1, 
+          failedInput: currentTest.input,
+          expected: currentTest.expectedOutput,
+          actualOutput: b64decode(judgeResult.stdout)
+        });
+      }
+
+      // If it's something weird, just say error
+      if (finalStatusId !== 3) {
+        return res.json({ verdict: "Error", details: judgeResult.status?.description });
+      }
+      
+      // If finalStatusId === 3, this test case passed!
+      // We just move on to the next iteration.
+    }
+
+    // If we finished the loop without returning, all test cases were a success!
+    return res.json({ verdict: "Accepted", message: "All test cases passed! Great job." });
+
+  } catch (error) {
+    console.error("Oops, submitCode encountered an error:", error.message);
+    return res.status(500).json({ error: "Something went wrong while evaluating your code." });
   }
 };

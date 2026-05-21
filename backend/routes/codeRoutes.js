@@ -9,7 +9,7 @@
 
 const express    = require("express");
 const rateLimit  = require("express-rate-limit");
-const { runCode } = require("../controllers/codeController");
+const { runCode, submitCode } = require("../controllers/codeController");
 
 const router = express.Router();
 
@@ -27,5 +27,8 @@ const codeLimiter = rateLimit({
 
 // POST /run-code
 router.post("/", codeLimiter, runCode);
+
+// POST /run-code/submit
+router.post("/submit", codeLimiter, submitCode);
 
 module.exports = router;
