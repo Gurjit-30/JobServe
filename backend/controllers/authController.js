@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "Email already in use" });
@@ -23,6 +26,9 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     const user = await User.findOne({ email });
 

@@ -43,6 +43,11 @@ app.use("/auth/register", authLimiter);
 app.use(passport.initialize());
 
 // ── Database ──────────────────────────────────────────────────────────────────
+if (!process.env.MONGO_URI) {
+  console.error("FATAL ERROR: MONGO_URI is not defined.");
+  process.exit(1);
+}
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))

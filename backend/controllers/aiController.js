@@ -3,6 +3,9 @@ const model = require("../utils/gemini");
 
 exports.analyzeResume = async (req, res) => {
     try {
+        if (!req.file || !req.file.buffer) {
+            return res.status(400).json({ message: "No resume file uploaded" });
+        }
         const pdfData = await pdfParse(req.file.buffer);
         const resumeText = pdfData.text;
 
