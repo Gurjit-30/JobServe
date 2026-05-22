@@ -16,6 +16,9 @@ function App() {
   const [user, setUser] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [submissionRefreshKey, setSubmissionRefreshKey] = useState(0);
+
+  const triggerSubmissionRefresh = () => setSubmissionRefreshKey(prev => prev + 1);
 
   const fetchJobs = useCallback(async () => {
     if (!token) return;
@@ -205,8 +208,8 @@ function App() {
 
         {/* Coding Assessment Section */}
         <div className="coding-assessment-container">
-          <ProblemDescription />
-          <CodeEditor />
+          <ProblemDescription refreshKey={submissionRefreshKey} />
+          <CodeEditor onRunCode={triggerSubmissionRefresh} />
         </div>
 
       </main>

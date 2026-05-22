@@ -16,6 +16,7 @@
  */
 
 const axios = require("axios");
+const Submission = require("../models/Submission");
 
 // ── Judge0 language map ────────────────────────────────────────────────────
 const LANGUAGE_IDS = {
@@ -128,14 +129,29 @@ exports.runCode = async (req, res) => {
     }
 
     // ── Step 3: Decode and return ─────────────────────────────────────────
-    return res.json({
+    const responseData = {
       stdout:          b64decode(result.stdout),
       stderr:          b64decode(result.stderr),
       compile_output:  b64decode(result.compile_output),
       status:          result.status,       // { id, description }
       time:            result.time,         // seconds (string)
       memory:          result.memory,       // KB (number)
-    });
+    };
+
+    try {
+      await Submission.create({
+        user: req.userId,
+        language,
+        code,
+        status: result.status ? result.status.description : "Unknown",
+        runtime: result.time,
+        memory: result.memory
+      });
+    } catch (dbErr) {
+      console.error("Failed to save submission:", dbErr);
+    }
+
+    return res.json(responseData);
   } catch (err) {
     // Surface Judge0 error body if available
     const judgeMsg = err.response?.data?.error || err.response?.data?.message;
@@ -226,18 +242,22 @@ exports.submitCode = async (req, res) => {
 
       // Handle common bad outcomes
       if (finalStatusId === 6) {
+        await Submission.create({ user: req.userId, language, code, status: "Compilation Error" }).catch(console.error);
         return res.json({ verdict: "Compilation Error", details: b64decode(judgeResult.compile_output) });
       }
       
       if (finalStatusId === 5) {
+        await Submission.create({ user: req.userId, language, code, status: "Time Limit Exceeded" }).catch(console.error);
         return res.json({ verdict: "Time Limit Exceeded", testCaseIndex: i + 1 });
       }
       
       if (finalStatusId >= 7 && finalStatusId <= 12) {
+        await Submission.create({ user: req.userId, language, code, status: "Runtime Error" }).catch(console.error);
         return res.json({ verdict: "Runtime Error", details: b64decode(judgeResult.stderr) });
       }
 
       if (finalStatusId === 4) {
+        await Submission.create({ user: req.userId, language, code, status: "Wrong Answer" }).catch(console.error);
         return res.json({ 
           verdict: "Wrong Answer", 
           testCaseIndex: i + 1, 
@@ -257,10 +277,33 @@ exports.submitCode = async (req, res) => {
     }
 
     // If we finished the loop without returning, all test cases were a success!
+    try {
+      await Submission.create({
+        user: req.userId,
+        language,
+        code,
+        status: "Accepted",
+        runtime: "N/A",
+        memory: 0
+      });
+    } catch (dbErr) {
+      console.error("Failed to save submission:", dbErr);
+    }
+
     return res.json({ verdict: "Accepted", message: "All test cases passed! Great job." });
 
   } catch (error) {
     console.error("Oops, submitCode encountered an error:", error.message);
     return res.status(500).json({ error: "Something went wrong while evaluating your code." });
+  }
+};
+
+exports.getSubmissions = async (req, res) => {
+  try {
+    const submissions = await Submission.find({ user: req.userId }).sort({ createdAt: -1 }).limit(50);
+    return res.json(submissions);
+  } catch (error) {
+    console.error("Error fetching submissions:", error);
+    return res.status(500).json({ error: "Failed to fetch submissions." });
   }
 };

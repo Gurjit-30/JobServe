@@ -153,7 +153,7 @@ function getStatusStyle(statusId) {
   return { color: "#94a3b8", label: "Unknown", icon: "?" };
 }
 
-export default function CodeEditor() {
+export default function CodeEditor({ onRunCode }) {
   const [language, setLanguage] = useState("python");
   const [theme,    setTheme]    = useState("vs-dark");
   const [code,     setCode]     = useState(SNIPPETS["python"]);
@@ -229,8 +229,9 @@ export default function CodeEditor() {
       });
     } finally {
       setIsRunning(false);
+      if (onRunCode) onRunCode();
     }
-  }, [isRunning, language, code, stdin]);
+  }, [isRunning, language, code, stdin, onRunCode]);
 
   // Ctrl/Cmd + Enter shortcut to run code
   const handleEditorKeyDown = useCallback((e) => {

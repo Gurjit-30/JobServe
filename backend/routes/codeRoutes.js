@@ -9,7 +9,8 @@
 
 const express    = require("express");
 const rateLimit  = require("express-rate-limit");
-const { runCode, submitCode } = require("../controllers/codeController");
+const { runCode, submitCode, getSubmissions } = require("../controllers/codeController");
+const auth = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -26,9 +27,12 @@ const codeLimiter = rateLimit({
 });
 
 // POST /run-code
-router.post("/", codeLimiter, runCode);
+router.post("/", auth, codeLimiter, runCode);
 
 // POST /run-code/submit
-router.post("/submit", codeLimiter, submitCode);
+router.post("/submit", auth, codeLimiter, submitCode);
+
+// GET /run-code/submissions
+router.get("/submissions", auth, getSubmissions);
 
 module.exports = router;
