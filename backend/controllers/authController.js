@@ -57,8 +57,16 @@ exports.login = async (req, res) => {
 
 exports.oauthCallback = (req, res) => {
   const token = req.user?.token;
-  if (!token) return res.redirect(`${process.env.CLIENT_URL}?auth_error=true`);
-  res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
+  const clientUrl = process.env.CLIENT_URL || "";
+  
+  if (!token) return res.redirect(`${clientUrl}/?auth_error=true`);
+  
+  // Ensure we don't redirect to "undefined?token=..." if CLIENT_URL is missing
+  const redirectUrl = clientUrl.endsWith("/") 
+    ? `${clientUrl}?token=${token}` 
+    : `${clientUrl}/?token=${token}`;
+    
+  res.redirect(redirectUrl);
 };
 
 exports.getMe = async (req, res) => {

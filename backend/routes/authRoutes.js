@@ -21,11 +21,11 @@ router.get(
       if (err) {
         console.error("Google OAuth Error:", err);
         const clientUrl = process.env.CLIENT_URL || "";
-        return res.redirect(`${clientUrl}?auth_error=true`);
+        return res.redirect(`${clientUrl}/?auth_error=true`);
       }
       if (!user) {
         const clientUrl = process.env.CLIENT_URL || "";
-        return res.redirect(`${clientUrl}?auth_error=true`);
+        return res.redirect(`${clientUrl}/?auth_error=true`);
       }
       req.user = user;
       next();
