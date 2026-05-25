@@ -34,7 +34,8 @@ function Login({ setToken }) {
       toast.success("Signed in successfully!");
     }
     if (authError) {
-      toast.error("OAuth sign-in failed. Please try again.");
+      const errorDetails = params.get("error_details") || "Unknown error";
+      toast.error(`OAuth sign-in failed: ${errorDetails}`);
       window.history.replaceState({}, document.title, "/");
     }
   }, [setToken]);

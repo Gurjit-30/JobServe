@@ -21,7 +21,8 @@ router.get(
       if (err) {
         console.error("Google OAuth Error:", err);
         const clientUrl = process.env.CLIENT_URL || "";
-        return res.redirect(`${clientUrl}/?auth_error=true`);
+        const errorMessage = err.message || "Unknown error";
+        return res.redirect(`${clientUrl}/?auth_error=true&error_details=${encodeURIComponent(errorMessage)}`);
       }
       if (!user) {
         const clientUrl = process.env.CLIENT_URL || "";
