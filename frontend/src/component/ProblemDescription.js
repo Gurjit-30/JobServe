@@ -9,36 +9,23 @@ export default function ProblemDescription({ refreshKey }) {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [challenge, setChallenge] = useState(null);
+  const [loadingChallenge, setLoadingChallenge] = useState(true);
 
-  const markdownContent = `
-# Two Sum
+  useEffect(() => {
+    fetchDailyChallenge();
+  }, []);
 
-## Problem Statement
-Given an array of integers \`nums\` and an integer \`target\`, return indices of the two numbers such that they add up to \`target\`.
-You may assume that each input would have ***exactly* one solution**, and you may not use the same element twice.
-You can return the answer in any order.
-
-## Constraints
-- \`2 <= nums.length <= 10^4\`
-- \`-10^9 <= nums[i] <= 10^9\`
-- \`-10^9 <= target <= 10^9\`
-- **Only one valid answer exists.**
-
-## Example Test Cases
-
-### Example 1:
-**Input:** \`nums = [2,7,11,15]\`, \`target = 9\`  
-**Output:** \`[0,1]\`  
-**Explanation:** Because \`nums[0] + nums[1] == 9\`, we return \`[0, 1]\`.
-
-### Example 2:
-**Input:** \`nums = [3,2,4]\`, \`target = 6\`  
-**Output:** \`[1,2]\`  
-
-### Example 3:
-**Input:** \`nums = [3,3]\`, \`target = 6\`  
-**Output:** \`[0,1]\`  
-  `;
+  const fetchDailyChallenge = async () => {
+    try {
+      const res = await api.get("/challenges/daily");
+      setChallenge(res.data);
+    } catch (err) {
+      console.error("Failed to fetch daily challenge:", err);
+    } finally {
+      setLoadingChallenge(false);
+    }
+  };
 
   useEffect(() => {
     if (activeTab === "submissions") {
@@ -94,16 +81,26 @@ You can return the answer in any order.
       <div className="problem-body flex-1 overflow-y-auto">
         {activeTab === "description" && (
           <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-200">Two Sum</h2>
-              <span className="difficulty-badge easy">Easy</span>
-            </div>
-            <ReactMarkdown 
-              remarkPlugins={[remarkGfm]} 
-              className="markdown-body"
-            >
-              {markdownContent}
-            </ReactMarkdown>
+            {loadingChallenge ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : challenge ? (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-200">Daily Challenge: {challenge.title}</h2>
+                  <span className={\`difficulty-badge \${challenge.difficulty.toLowerCase()}\`}>{challenge.difficulty}</span>
+                </div>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]} 
+                  className="markdown-body"
+                >
+                  {challenge.markdown}
+                </ReactMarkdown>
+              </>
+            ) : (
+              <div className="text-gray-400">Failed to load today's challenge.</div>
+            )}
           </div>
         )}
 

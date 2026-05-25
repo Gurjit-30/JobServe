@@ -8,12 +8,15 @@ import ResumeAnalyzer from "./component/ResumeAnalyzer";
 import AnimatedBackground from "./component/AnimatedBackground";
 import CodeEditor from "./component/CodeEditor";
 import ProblemDescription from "./component/ProblemDescription";
+import Leaderboard from "./component/Leaderboard";
+import CourseDashboard from "./component/CourseDashboard";
 
 function App() {
   const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState("All");
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
+  const [activeView, setActiveView] = useState("home");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [submissionRefreshKey, setSubmissionRefreshKey] = useState(0);
@@ -111,6 +114,23 @@ function App() {
             </svg>
             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Jobserv</h1>
           </div>
+
+          {/* Navigation Tabs */}
+          <div className="hidden md:flex items-center gap-2 glass-card p-1 rounded-xl">
+            <button 
+              onClick={() => setActiveView('home')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${activeView === 'home' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
+            >
+              Job Tracker
+            </button>
+            <button 
+              onClick={() => setActiveView('courses')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${activeView === 'courses' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
+            >
+              Courses
+            </button>
+          </div>
+
           <div className="flex items-center gap-4">
             {user && (
               <div className="hidden md:flex items-center gap-2 bg-gray-800/80 px-3 py-1.5 rounded-full border border-gray-700/50 shadow-inner">
@@ -135,10 +155,12 @@ function App() {
       </nav>
 
       {/* MAIN CONTENT */}
-      <main className="max-w-4xl mx-auto mt-8 p-4 flex flex-col gap-8 relative z-10">
+      <main className={`mx-auto mt-8 p-4 flex flex-col gap-8 relative z-10 ${activeView === 'courses' ? 'max-w-[90rem]' : 'max-w-4xl'}`}>
 
-        {/* Analytics Dashboard */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
+        {activeView === 'home' && (
+          <div className="flex flex-col gap-8 animate-fade-in">
+            {/* Analytics Dashboard */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="glass-card p-4 rounded-xl flex border-l-4 border-l-gray-400 flex-col items-center justify-center">
             <span className="text-3xl font-black text-gray-200">{stats.total}</span>
             <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Total</span>
@@ -207,10 +229,21 @@ function App() {
         <ResumeAnalyzer />
 
         {/* Coding Assessment Section */}
-        <div className="coding-assessment-container">
+        <div className="coding-assessment-container h-[600px] mb-8">
           <ProblemDescription refreshKey={submissionRefreshKey} />
           <CodeEditor onRunCode={triggerSubmissionRefresh} />
         </div>
+
+        {/* Global Leaderboard Section */}
+        <div className="h-[500px] mb-12">
+          <Leaderboard />
+        </div>
+          </div>
+        )}
+
+        {activeView === 'courses' && (
+          <CourseDashboard />
+        )}
 
       </main>
     </div>

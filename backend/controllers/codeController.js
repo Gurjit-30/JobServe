@@ -17,6 +17,7 @@
 
 const axios = require("axios");
 const Submission = require("../models/Submission");
+const User = require("../models/User");
 
 // ── Judge0 language map ────────────────────────────────────────────────────
 const LANGUAGE_IDS = {
@@ -286,8 +287,16 @@ exports.submitCode = async (req, res) => {
         runtime: "N/A",
         memory: 0
       });
+
+      // Award points if the user hasn't solved this challenge yet
+      const user = await User.findById(req.userId);
+      if (user && !user.completedChallenges.includes(problemId)) {
+        user.completedChallenges.push(problemId);
+        user.score = (user.score || 0) + 100;
+        await user.save();
+      }
     } catch (dbErr) {
-      console.error("Failed to save submission:", dbErr);
+      console.error("Failed to save submission or update user score:", dbErr);
     }
 
     return res.json({ verdict: "Accepted", message: "All test cases passed! Great job." });

@@ -10,6 +10,8 @@ const jobRoutes  = require("./routes/jobRoutes");
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes   = require("./routes/aiRoutes");
 const codeRoutes = require("./routes/codeRoutes");
+const challengeRoutes = require("./routes/challengeRoutes");
+const leaderboardRoutes = require("./routes/leaderboardRoutes");
 
 const app = express();
 
@@ -61,6 +63,8 @@ app.use("/jobs", jobRoutes);
 app.use("/auth", authRoutes);
 app.use("/ai", aiRoutes);
 app.use("/run-code", codeRoutes);
+app.use("/challenges", challengeRoutes);
+app.use("/leaderboard", leaderboardRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ status: "Jobserv API running 🚀" }));
