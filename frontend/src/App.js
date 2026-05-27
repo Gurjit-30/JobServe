@@ -10,13 +10,19 @@ import CodeEditor from "./component/CodeEditor";
 import ProblemDescription from "./component/ProblemDescription";
 import Leaderboard from "./component/Leaderboard";
 import CourseDashboard from "./component/CourseDashboard";
+import { Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import CoursePlayer from './component/CoursePlayer/CoursePlayer';
+import InterviewSetup from './component/AIInterview/InterviewSetup';
+import ActiveInterview from './component/AIInterview/ActiveInterview';
+import InterviewReport from './component/AIInterview/InterviewReport';
 
 function App() {
   const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState("All");
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
-  const [activeView, setActiveView] = useState("home");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [submissionRefreshKey, setSubmissionRefreshKey] = useState(0);
@@ -115,20 +121,25 @@ function App() {
             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Jobserv</h1>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="hidden md:flex items-center gap-2 glass-card p-1 rounded-xl">
-            <button 
-              onClick={() => setActiveView('home')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${activeView === 'home' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
+            <Link 
+              to="/"
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${location.pathname === '/' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
             >
               Job Tracker
-            </button>
-            <button 
-              onClick={() => setActiveView('courses')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${activeView === 'courses' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
+            </Link>
+            <Link 
+              to="/courses"
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${location.pathname === '/courses' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)] border border-emerald-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
             >
               Courses
-            </button>
+            </Link>
+            <Link 
+              to="/interview/setup"
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${location.pathname.includes('/interview') ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)] border border-blue-500/20' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'}`}
+            >
+              AI Interview Hub
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -155,9 +166,9 @@ function App() {
       </nav>
 
       {/* MAIN CONTENT */}
-      <main className={`mx-auto mt-8 p-4 flex flex-col gap-8 relative z-10 ${activeView === 'courses' ? 'max-w-[90rem]' : 'max-w-4xl'}`}>
-
-        {activeView === 'home' && (
+      <main className={`mx-auto mt-8 p-4 flex flex-col gap-8 relative z-10 ${location.pathname.includes('/courses') || location.pathname.includes('/interview') ? 'max-w-[90rem]' : 'max-w-4xl'}`}>
+        <Routes>
+          <Route path="/" element={
           <div className="flex flex-col gap-8 animate-fade-in">
             {/* Analytics Dashboard */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -239,12 +250,14 @@ function App() {
           <Leaderboard />
         </div>
           </div>
-        )}
+          } />
 
-        {activeView === 'courses' && (
-          <CourseDashboard />
-        )}
-
+          <Route path="/courses" element={<CourseDashboard />} />
+          <Route path="/course/:courseId" element={<CoursePlayer />} />
+          <Route path="/interview/setup" element={<InterviewSetup />} />
+          <Route path="/interview/active/:interviewId" element={<ActiveInterview />} />
+          <Route path="/interview/report/:interviewId" element={<InterviewReport />} />
+        </Routes>
       </main>
     </div>
   );
