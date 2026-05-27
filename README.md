@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  💼 Jobserv (Smart Job Tracker)
+  💼 Prepserve (Smart Job Tracker)
   <br>
 </h1>
 
@@ -15,7 +15,7 @@
 
 ## ✨ Introduction
 
-**Jobserv** is a production-grade job application tracking system built with the MERN stack. Designed to take the chaos out of the job hunt, it features secure OAuth authentication, an interactive real-time dashboard, and an integrated **Gemini AI Resume Analyzer** that gives you instant feedback and tailored cover letters to help you land your dream job faster.
+**Prepserve** is a production-grade job application tracking system built with the MERN stack. Designed to take the chaos out of the job hunt, it features secure OAuth authentication, an interactive real-time dashboard, and an integrated **Gemini AI Resume Analyzer** that gives you instant feedback and tailored cover letters to help you land your dream job faster.
 
 ## 🚀 Key Features
 
@@ -52,8 +52,8 @@ Make sure you have [Node.js](https://nodejs.org/) and Git installed on your mach
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/jobserv.git
-   cd jobserv
+   git clone https://github.com/your-username/prepserve.git
+   cd prepserve
    ```
 
 2. **Install Backend Dependencies**
@@ -110,7 +110,7 @@ npm start
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/your-username/jobserv/issues) if you want to contribute.
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/your-username/prepserve/issues) if you want to contribute.
 
 ## 📝 License
 

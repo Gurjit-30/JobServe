@@ -71,7 +71,7 @@ app.use("/courses", courseRoutes);
 app.use("/interviews", interviewRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
-app.get("/", (req, res) => res.json({ status: "Jobserv API running 🚀" }));
+app.get("/", (req, res) => res.json({ status: "Prepserve API running 🚀" }));
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;

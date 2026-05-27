@@ -84,7 +84,7 @@ function Login({ setToken }) {
             {isRegister ? "Create account" : "Welcome back"}
           </h2>
           <p className="mt-1 text-sm font-semibold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-            Jobserv — Your Career Command Center
+            Prepserve — Your Career Command Center
           </p>
         </div>
 

@@ -17,7 +17,7 @@ passport.use(
         const email =
           profile.emails && profile.emails[0]
             ? profile.emails[0].value
-            : `google_${profile.id}@oauth.jobserv`;
+            : `google_${profile.id}@oauth.prepserve`;
 
         // Find or create user
         let user = await User.findOne({ email });
