@@ -11,13 +11,23 @@ const InterviewSetup = () => {
   const startInterview = async () => {
     setIsStarting(true);
     try {
+      // Top 10% Tech Stack Tip: WebRTC Prep for live mock interviews
+      // Here we request camera permission as a precursor to setting up RTCPeerConnection
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // In a full WebRTC flow, we would initialize an RTCPeerConnection here
+        // and exchange SDP offers/answers with the server via WebSockets.
+      } else {
+        alert("WebRTC is not supported in this browser. Live streaming features will be disabled.");
+      }
+
       const res = await axios.post('http://localhost:5000/interviews/start', { companyTarget, roleTarget }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       navigate(`/interview/active/${res.data.interview._id}`);
     } catch (error) {
       console.error(error);
-      alert('Failed to start interview. Ensure you are logged in.');
+      alert('Failed to start interview. Ensure you have granted camera permissions and are logged in.');
       setIsStarting(false);
     }
   };

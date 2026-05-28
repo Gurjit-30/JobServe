@@ -18,6 +18,14 @@
 const axios = require("axios");
 const Submission = require("../models/Submission");
 const User = require("../models/User");
+const redis = require("redis");
+
+// Initialize Redis Client for Judge0 API Caching
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379"
+});
+redisClient.on("error", (err) => console.log("Redis Client Error (caching disabled):", err));
+redisClient.connect().catch(() => console.log("Failed to connect to Redis. Running without cache."));
 
 // ── Judge0 language map ────────────────────────────────────────────────────
 const LANGUAGE_IDS = {
@@ -186,52 +194,75 @@ exports.submitCode = async (req, res) => {
     const headers = buildHeaders();
 
     // Loop through each test case sequentially
-    // Doing them one by one is kinder to the free API rate limits!
     for (let i = 0; i < testCases.length; i++) {
       let currentTest = testCases[i];
+      let judgeResult = null;
       
-      let submissionPayload = {
-        language_id: languageId,
-        source_code: b64encode(code),
-        stdin: b64encode(currentTest.input),
-        expected_output: b64encode(currentTest.expectedOutput),
-        cpu_time_limit: 2, 
-        memory_limit: 128000,
-      };
-
-      // 1. Send the submission to Judge0
-      let sendRes = await axios.post(
-        `${JUDGE0_BASE_URL}/submissions?base64_encoded=true&wait=false`,
-        submissionPayload,
-        { headers, timeout: 15000 }
-      );
-
-      let token = sendRes.data?.token;
-      if (!token) {
-        throw new Error("No token returned from Judge0.");
+      const cacheKey = `judge0:${languageId}:${b64encode(code)}:${b64encode(currentTest.input)}`;
+      
+      try {
+        if (redisClient.isReady) {
+          const cachedResult = await redisClient.get(cacheKey);
+          if (cachedResult) {
+            judgeResult = JSON.parse(cachedResult);
+          }
+        }
+      } catch (cacheErr) {
+        console.error("Redis Cache error:", cacheErr);
       }
 
-      // 2. Poll Judge0 until it's done processing
-      let judgeResult = null;
-      let maxAttempts = 15;
-      
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        await sleep(1000); // Give it a second to think
-        
-        let checkRes = await axios.get(
-          `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=true&fields=status,compile_output,stdout,stderr`,
-          { headers, timeout: 10000 }
+      if (!judgeResult) {
+        let submissionPayload = {
+          language_id: languageId,
+          source_code: b64encode(code),
+          stdin: b64encode(currentTest.input),
+          expected_output: b64encode(currentTest.expectedOutput),
+          cpu_time_limit: 2, 
+          memory_limit: 128000,
+        };
+
+        // 1. Send the submission to Judge0
+        let sendRes = await axios.post(
+          `${JUDGE0_BASE_URL}/submissions?base64_encoded=true&wait=false`,
+          submissionPayload,
+          { headers, timeout: 15000 }
         );
 
-        let statusId = checkRes.data?.status?.id;
-        
-        // 1 = In Queue, 2 = Processing
-        if (statusId === 1 || statusId === 2) {
-          continue; 
+        let token = sendRes.data?.token;
+        if (!token) {
+          throw new Error("No token returned from Judge0.");
         }
 
-        judgeResult = checkRes.data;
-        break;
+        // 2. Poll Judge0 until it's done processing
+        let maxAttempts = 15;
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          await sleep(1000); // Give it a second to think
+          
+          let checkRes = await axios.get(
+            `${JUDGE0_BASE_URL}/submissions/${token}?base64_encoded=true&fields=status,compile_output,stdout,stderr`,
+            { headers, timeout: 10000 }
+          );
+
+          let statusId = checkRes.data?.status?.id;
+          
+          // 1 = In Queue, 2 = Processing
+          if (statusId === 1 || statusId === 2) {
+            continue; 
+          }
+
+          judgeResult = checkRes.data;
+          break;
+        }
+
+        if (judgeResult && redisClient.isReady) {
+          // Cache the result for 24 hours
+          try {
+            await redisClient.setEx(cacheKey, 86400, JSON.stringify(judgeResult));
+          } catch (setErr) {
+             console.error("Redis Set Error:", setErr);
+          }
+        }
       }
 
       // If we never got an answer...

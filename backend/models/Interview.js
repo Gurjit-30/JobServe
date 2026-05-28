@@ -21,7 +21,8 @@ const interviewSchema = new mongoose.Schema({
   interactions: [interviewInteractionSchema],
   overallTechnicalScore: { type: Number },
   overallCommunicationScore: { type: Number },
-  overallSuggestedImprovements: { type: String }
+  overallSuggestedImprovements: { type: String },
+  failedTopics: [{ type: String }] // Extracted topics where candidate failed
 }, { timestamps: true });
 
 module.exports = mongoose.model("Interview", interviewSchema);

@@ -14,6 +14,7 @@ const challengeRoutes = require("./routes/challengeRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -34,6 +35,15 @@ app.use(
 
 // ── Body Parser ───────────────────────────────────────────────────────────────
 app.use(express.json());
+
+// ── Data Sanitization ─────────────────────────────────────────────────────────
+// Prevent NoSQL injection
+const mongoSanitize = require("express-mongo-sanitize");
+app.use(mongoSanitize());
+
+// Prevent XSS attacks
+const xss = require("xss-clean");
+app.use(xss());
 
 // ── Rate Limiting (brute-force protection on auth routes) ─────────────────────
 const authLimiter = rateLimit({
@@ -69,6 +79,7 @@ app.use("/challenges", challengeRoutes);
 app.use("/leaderboard", leaderboardRoutes);
 app.use("/courses", courseRoutes);
 app.use("/interviews", interviewRoutes);
+app.use("/user", userRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ status: "Prepserve API running 🚀" }));

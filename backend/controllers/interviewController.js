@@ -38,12 +38,14 @@ The candidate answered: "${answerTranscript}"
 
 Evaluate this answer using the STAR (Situation, Task, Action, Result) method. 
 Provide a short feedback summary, rate their technical and communication skills out of 10.
+Identify any technical topics or concepts the candidate struggled with (e.g. "Binary Trees", "System Design") as an array.
 Finally, suggest the next follow-up or behavioral question to ask.
 
 Respond strictly in JSON format with these keys:
 - starFeedback (string)
 - technicalScore (number 1-10)
 - communicationScore (number 1-10)
+- failedTopics (array of strings)
 - nextQuestion (string)`;
 
     const result = await model.generateContent(prompt);
@@ -51,7 +53,7 @@ Respond strictly in JSON format with these keys:
     
     // Assuming the response is clean JSON (we can sanitize if needed)
     const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/) || responseText.match(/\{[\s\S]*\}/);
-    let evaluation = { starFeedback: "Good answer.", technicalScore: 7, communicationScore: 7, nextQuestion: "Tell me about a time you failed." };
+    let evaluation = { starFeedback: "Good answer.", technicalScore: 7, communicationScore: 7, failedTopics: [], nextQuestion: "Tell me about a time you failed." };
     
     if (jsonMatch) {
       try {
@@ -69,6 +71,13 @@ Respond strictly in JSON format with these keys:
       communicationScore: evaluation.communicationScore,
       emotionsDetected: { confidenceLevel, nervousnessLevel, eyeContactScore }
     });
+
+    // Merge failed topics into the interview record
+    if (evaluation.failedTopics && Array.isArray(evaluation.failedTopics)) {
+      const existingTopics = interviewRecord.failedTopics || [];
+      const newTopics = evaluation.failedTopics.filter(topic => !existingTopics.includes(topic));
+      interviewRecord.failedTopics = [...existingTopics, ...newTopics];
+    }
 
     await interviewRecord.save();
 
@@ -103,6 +112,17 @@ exports.completeInterview = async (req, res) => {
     interviewRecord.status = 'completed';
 
     await interviewRecord.save();
+
+    // Update user's readiness score
+    const User = require("../models/User");
+    const user = await User.findById(interviewRecord.candidateId);
+    if (user) {
+      // Basic moving average logic for readiness score out of 100
+      const newScore = ((interviewRecord.overallTechnicalScore + interviewRecord.overallCommunicationScore) / 2) * 10;
+      user.readinessScore = user.readinessScore ? Math.round((user.readinessScore + newScore) / 2) : newScore;
+      await user.save();
+    }
+
     res.json({ message: "Interview completed", interview: interviewRecord });
   } catch (error) {
     res.status(500).json({ error: "Failed to complete interview" });

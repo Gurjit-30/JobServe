@@ -6,6 +6,8 @@ import DoubtForum from './DoubtForum';
 import LessonResources from './LessonResources';
 import { FiCheckCircle, FiCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
+import { subscribeToCourseViewers, joinCourseRoom, leaveCourseRoom } from '../../firebase';
 
 const CoursePlayer = () => {
   const { courseId } = useParams();
@@ -13,6 +15,22 @@ const CoursePlayer = () => {
   const [watchedLessons, setWatchedLessons] = useState([]);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [activeTab, setActiveTab] = useState('doubts');
+  const [liveViewers, setLiveViewers] = useState(0);
+
+  useEffect(() => {
+    // Generate a simple mock userId for tracking
+    const userId = localStorage.getItem("token") ? JSON.parse(atob(localStorage.getItem("token").split('.')[1])).id : Math.random().toString(36).substr(2, 9);
+    
+    joinCourseRoom(courseId, userId);
+    const unsubscribe = subscribeToCourseViewers(courseId, (count) => {
+      setLiveViewers(count);
+    });
+
+    return () => {
+      unsubscribe();
+      leaveCourseRoom(courseId, userId);
+    };
+  }, [courseId]);
 
   useEffect(() => {
     // Mock data if backend is not seeded yet, or fetch from backend
@@ -84,13 +102,25 @@ const CoursePlayer = () => {
   if (!course || !currentLesson) return <div className="p-8 text-center text-white">Loading Course...</div>;
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
-      <div className="w-full md:w-1/4 bg-gray-800 border-r border-gray-700 overflow-y-auto hidden md:block">
-        <div className="p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-blue-400">{course.title}</h2>
-        </div>
-        <div>
+    <>
+      <Helmet>
+        <title>{course.title} | {currentLesson.title} - JobServe</title>
+        <meta name="description" content={`Learn ${currentLesson.title} in the course ${course.title} on JobServe. Accelerate your career today.`} />
+      </Helmet>
+      <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white">
+        {/* Sidebar */}
+        <div className="w-full md:w-1/4 bg-gray-800 border-r border-gray-700 overflow-y-auto hidden md:block">
+          <div className="p-4 border-b border-gray-700">
+            <h2 className="text-xl font-bold text-blue-400">{course.title}</h2>
+            <div className="mt-2 flex items-center text-sm font-medium text-red-400">
+              <span className="relative flex h-3 w-3 mr-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+              {liveViewers} Live Watching
+            </div>
+          </div>
+          <div>
           {course.modules.map(module => (
             <div key={module._id} className="mb-4">
               <h3 className="bg-gray-700 px-4 py-2 font-semibold text-sm uppercase tracking-wider">{module.title}</h3>
@@ -150,7 +180,7 @@ const CoursePlayer = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
