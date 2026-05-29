@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import AnimatedBackground from "./AnimatedBackground";
 import { toast } from "react-hot-toast";
+import { useGoogleLogin } from '@react-oauth/google';
 
 // ── SVG Icons ─────────────────────────────────────────────────────────────────
 const GoogleIcon = () => (
@@ -22,23 +23,17 @@ function Login({ setToken }) {
   const [loading, setLoading] = useState(false);
 
   // Handle OAuth redirect — backend sends ?token=JWT back to CLIENT_URL
+  // Removing server-side redirect OAuth logic since we use client-side OAuth now.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const oauthToken = params.get("token");
     const authError = params.get("auth_error");
 
-    if (oauthToken) {
-      localStorage.setItem("token", oauthToken);
-      setToken(oauthToken);
-      window.history.replaceState({}, document.title, "/");
-      toast.success("Signed in successfully!");
-    }
     if (authError) {
       const errorDetails = params.get("error_details") || "Unknown error";
       toast.error(`OAuth sign-in failed: ${errorDetails}`);
       window.history.replaceState({}, document.title, "/");
     }
-  }, [setToken]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,9 +57,27 @@ function Login({ setToken }) {
     }
   };
 
-  const handleGoogle = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL}/auth/google`;
-  };
+  const handleGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const res = await api.post('/auth/google', { token: tokenResponse.credential || tokenResponse.access_token || tokenResponse.id_token });
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+          setToken(res.data.token);
+          toast.success("Signed in with Google!");
+        }
+      } catch (err) {
+        toast.error("Google sign-in failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google login failed");
+    },
+    flow: 'implicit'
+  });
 
 
   return (

@@ -1,3 +1,4 @@
+const axios = require("axios");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -55,18 +56,49 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.oauthCallback = (req, res) => {
-  const token = req.user?.token;
-  const clientUrl = process.env.CLIENT_URL || "";
-  
-  if (!token) return res.redirect(`${clientUrl}/?auth_error=true`);
-  
-  // Ensure we don't redirect to "undefined?token=..." if CLIENT_URL is missing
-  const redirectUrl = clientUrl.endsWith("/") 
-    ? `${clientUrl}?token=${token}` 
-    : `${clientUrl}/?token=${token}`;
-    
-  res.redirect(redirectUrl);
+exports.googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body; // This is the access_token from Google
+    if (!token) {
+      return res.status(400).json({ message: "Token is required" });
+    }
+
+    // Fetch user info using the access token
+    const userInfoResponse = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const payload = userInfoResponse.data;
+
+    const email = payload.email;
+    const name = payload.name;
+    const avatar = payload.picture;
+    const googleId = payload.sub;
+
+    // Find or create user
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        email,
+        password: `oauth_google_${googleId}`,
+        name,
+        avatar,
+        provider: "google",
+      });
+      await user.save();
+    }
+
+    const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.json({ token: jwtToken });
+  } catch (err) {
+    console.error("Google verify error:", err.message);
+    res.status(500).json({ error: "Failed to authenticate with Google" });
+  }
 };
 
 exports.getMe = async (req, res) => {

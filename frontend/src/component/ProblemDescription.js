@@ -64,13 +64,13 @@ export default function ProblemDescription({ refreshKey }) {
       <div className="bg-black/20 border-b border-white/5 pt-2">
         <div className="flex w-full items-end gap-6 px-6 pt-2">
           <button 
-            className={\`pb-3 font-semibold transition-colors \${activeTab === "description" ? "text-emerald-400 border-b-2 border-emerald-400" : "text-gray-400 hover:text-gray-200"}\`}
+            className={`pb-3 font-semibold transition-colors ${activeTab === "description" ? "text-emerald-400 border-b-2 border-emerald-400" : "text-gray-400 hover:text-gray-200"}`}
             onClick={() => { setActiveTab("description"); setSelectedSubmission(null); }}
           >
             Description
           </button>
           <button 
-            className={\`pb-3 font-semibold transition-colors \${activeTab === "submissions" ? "text-emerald-400 border-b-2 border-emerald-400" : "text-gray-400 hover:text-gray-200"}\`}
+            className={`pb-3 font-semibold transition-colors ${activeTab === "submissions" ? "text-emerald-400 border-b-2 border-emerald-400" : "text-gray-400 hover:text-gray-200"}`}
             onClick={() => { setActiveTab("submissions"); setSelectedSubmission(null); }}
           >
             Submissions
@@ -89,7 +89,7 @@ export default function ProblemDescription({ refreshKey }) {
               <>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-200">Daily Challenge: {challenge.title}</h2>
-                  <span className={\`difficulty-badge \${challenge.difficulty.toLowerCase()}\`}>{challenge.difficulty}</span>
+                  <span className={`difficulty-badge ${challenge.difficulty.toLowerCase()}`}>{challenge.difficulty}</span>
                 </div>
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]} 
@@ -129,10 +129,10 @@ export default function ProblemDescription({ refreshKey }) {
                       onClick={() => setSelectedSubmission(sub)}
                     >
                       <td className="px-6 py-4 text-gray-300">{formatDate(sub.createdAt)}</td>
-                      <td className={\`px-6 py-4 font-semibold \${getStatusColor(sub.status)}\`}>{sub.status}</td>
+                      <td className={`px-6 py-4 font-semibold ${getStatusColor(sub.status)}`}>{sub.status}</td>
                       <td className="px-6 py-4 text-gray-300"><span className="bg-gray-800 px-2 py-1 rounded text-xs">{sub.language}</span></td>
-                      <td className="px-6 py-4 text-gray-400">{sub.runtime ? \`\${sub.runtime} s\` : "N/A"}</td>
-                      <td className="px-6 py-4 text-gray-400">{sub.memory ? \`\${(sub.memory/1024).toFixed(1)} MB\` : "N/A"}</td>
+                      <td className="px-6 py-4 text-gray-400">{sub.runtime ? `${sub.runtime} s` : "N/A"}</td>
+                      <td className="px-6 py-4 text-gray-400">{sub.memory ? `${(sub.memory/1024).toFixed(1)} MB` : "N/A"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -146,7 +146,7 @@ export default function ProblemDescription({ refreshKey }) {
             <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-4">
               <div>
                 <button onClick={() => setSelectedSubmission(null)} className="text-sm text-emerald-400 hover:underline mb-2 inline-block">&larr; Back to all submissions</button>
-                <h3 className={\`text-lg font-bold \${getStatusColor(selectedSubmission.status)}\`}>
+                <h3 className={`text-lg font-bold ${getStatusColor(selectedSubmission.status)}`}>
                   {selectedSubmission.status}
                 </h3>
                 <p className="text-xs text-gray-400 mt-1">
@@ -155,8 +155,8 @@ export default function ProblemDescription({ refreshKey }) {
               </div>
               <div className="flex gap-4 text-sm bg-gray-800/50 p-3 rounded-lg border border-gray-700/50">
                 <div><span className="text-gray-500 block text-xs">Language</span><span className="font-mono text-gray-200">{selectedSubmission.language}</span></div>
-                <div><span className="text-gray-500 block text-xs">Runtime</span><span className="text-gray-200">{selectedSubmission.runtime ? \`\${selectedSubmission.runtime}s\` : "N/A"}</span></div>
-                <div><span className="text-gray-500 block text-xs">Memory</span><span className="text-gray-200">{selectedSubmission.memory ? \`\${(selectedSubmission.memory/1024).toFixed(1)} MB\` : "N/A"}</span></div>
+                <div><span className="text-gray-500 block text-xs">Runtime</span><span className="text-gray-200">{selectedSubmission.runtime ? `${selectedSubmission.runtime}s` : "N/A"}</span></div>
+                <div><span className="text-gray-500 block text-xs">Memory</span><span className="text-gray-200">{selectedSubmission.memory ? `${(selectedSubmission.memory/1024).toFixed(1)} MB` : "N/A"}</span></div>
               </div>
             </div>
             <div className="flex-1 rounded-md overflow-hidden border border-gray-700/50 bg-[#1e1e1e]">

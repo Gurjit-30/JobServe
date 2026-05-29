@@ -180,6 +180,7 @@ const CoursePlayer = () => {
           </div>
         </div>
       </div>
+    </div>
     </>
   );
 };

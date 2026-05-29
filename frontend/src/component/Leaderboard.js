@@ -48,19 +48,19 @@ export default function Leaderboard() {
             {leaders.map((user, index) => (
               <div 
                 key={user._id} 
-                className={\`flex items-center gap-4 p-3 rounded-xl border \${
+                className={`flex items-center gap-4 p-3 rounded-xl border ${
                   index === 0 ? 'bg-yellow-500/10 border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.1)]' : 
                   index === 1 ? 'bg-gray-300/10 border-gray-400/30 shadow-[0_0_15px_rgba(156,163,175,0.1)]' : 
                   index === 2 ? 'bg-amber-700/10 border-amber-700/30 shadow-[0_0_15px_rgba(180,83,9,0.1)]' : 
                   'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800/60'
-                } transition-all duration-300 hover:scale-[1.02]\`}
+                } transition-all duration-300 hover:scale-[1.02]`}
               >
-                <div className={\`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm \${
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
                   index === 0 ? 'bg-yellow-500 text-yellow-900' : 
                   index === 1 ? 'bg-gray-300 text-gray-800' : 
                   index === 2 ? 'bg-amber-600 text-amber-900' : 
                   'bg-gray-700 text-gray-300'
-                }\`}>
+                }`}>
                   #{index + 1}
                 </div>
                 
