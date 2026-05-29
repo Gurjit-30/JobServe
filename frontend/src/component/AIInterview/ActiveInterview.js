@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import * as faceapi from 'face-api.js';
+import * as faceapi from '@vladmandic/face-api';
 import toast from 'react-hot-toast';
 
 const ActiveInterview = () => {
