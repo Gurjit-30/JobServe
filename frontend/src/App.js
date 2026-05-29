@@ -10,7 +10,7 @@ import CodeEditor from "./component/CodeEditor";
 import ProblemDescription from "./component/ProblemDescription";
 import Leaderboard from "./component/Leaderboard";
 import CourseDashboard from "./component/CourseDashboard";
-import { Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import CoursePlayer from './component/CoursePlayer/CoursePlayer';
 import InterviewSetup from './component/AIInterview/InterviewSetup';
 import ActiveInterview from './component/AIInterview/ActiveInterview';
