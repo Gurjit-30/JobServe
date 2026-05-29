@@ -23,7 +23,6 @@ function App() {
   const [filter, setFilter] = useState("All");
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
