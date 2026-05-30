@@ -6,10 +6,8 @@ import JobList from "./component/JobList";
 import Login from "./component/Login";
 import ResumeAnalyzer from "./component/ResumeAnalyzer";
 import AnimatedBackground from "./component/AnimatedBackground";
-import CodeEditor from "./component/CodeEditor";
-import ProblemDescription from "./component/ProblemDescription";
-import Leaderboard from "./component/Leaderboard";
 import CourseDashboard from "./component/CourseDashboard";
+import PracticePage from "./component/PracticePage";
 import { Routes, Route, useLocation } from 'react-router-dom';
 import CoursePlayer from './component/CoursePlayer/CoursePlayer';
 import InterviewSetup from './component/AIInterview/InterviewSetup';
@@ -31,9 +29,6 @@ function App() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showJobForm, setShowJobForm] = useState(false);
-  const [submissionRefreshKey, setSubmissionRefreshKey] = useState(0);
-
-  const triggerSubmissionRefresh = () => setSubmissionRefreshKey(prev => prev + 1);
 
   const fetchJobs = useCallback(async () => {
     if (!token) return;
@@ -125,7 +120,7 @@ function App() {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
         <TopHeader user={user} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-        <main className={`flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 mx-auto w-full ${location.pathname.includes('/courses') || location.pathname.includes('/interview') ? 'max-w-[90rem]' : 'max-w-6xl'}`}>
+        <main className={`flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 mx-auto w-full ${location.pathname.includes('/courses') || location.pathname.includes('/interview') || location.pathname.includes('/practice') ? 'max-w-[90rem]' : 'max-w-6xl'}`}>
           <Routes>
             <Route path="/" element={
             <div className="flex flex-col gap-8 animate-fade-in">
@@ -203,19 +198,10 @@ function App() {
           {/* AI Resume Ranker */}
           <ResumeAnalyzer />
 
-          {/* Coding Assessment Section */}
-          <div className="coding-assessment-container h-[600px] mb-8">
-            <ProblemDescription refreshKey={submissionRefreshKey} />
-            <CodeEditor onRunCode={triggerSubmissionRefresh} />
-          </div>
-
-          {/* Global Leaderboard Section */}
-          <div className="h-[500px] mb-12">
-            <Leaderboard />
-          </div>
             </div>
             } />
 
+            <Route path="/practice" element={<PracticePage />} />
             <Route path="/courses" element={<CourseDashboard />} />
             <Route path="/course/:courseId" element={<CoursePlayer />} />
             <Route path="/interview/setup" element={<InterviewSetup />} />
