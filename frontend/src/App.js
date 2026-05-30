@@ -10,7 +10,7 @@ import CodeEditor from "./component/CodeEditor";
 import ProblemDescription from "./component/ProblemDescription";
 import Leaderboard from "./component/Leaderboard";
 import CourseDashboard from "./component/CourseDashboard";
-import { Routes, Route, useLocation, Link } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import CoursePlayer from './component/CoursePlayer/CoursePlayer';
 import InterviewSetup from './component/AIInterview/InterviewSetup';
 import ActiveInterview from './component/AIInterview/ActiveInterview';
@@ -26,7 +26,8 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+  // Theme context available via TopHeader — not used directly here
+  useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showJobForm, setShowJobForm] = useState(false);
