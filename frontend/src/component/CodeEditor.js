@@ -290,59 +290,70 @@ export default function CodeEditor({ onRunCode }) {
       {/* ── Toolbar ── */}
       <div className="editor-toolbar">
         {/* Language tabs */}
-        <div className="lang-tabs">
+        <div className="flex gap-1 p-1 bg-[#161b22] border border-[#21262d] rounded-xl">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.id}
-              className={`lang-tab ${language === lang.id ? "lang-tab-active" : ""}`}
-              style={language === lang.id ? { borderBottomColor: lang.color, color: lang.color } : {}}
+              className={`flex items-center gap-2 px-4 h-9 rounded-lg text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0] ${
+                language === lang.id 
+                  ? "bg-[#00e5a0] text-[#0d1117] shadow-[0_0_12px_rgba(0,229,160,0.3)]" 
+                  : "text-[#8b949e] hover:text-white hover:bg-white/5"
+              }`}
               onClick={() => handleLanguageChange(lang.id)}
             >
               <span>{lang.icon}</span>
-              <span>{lang.label}</span>
+              <span className="hidden sm:inline">{lang.label}</span>
             </button>
           ))}
         </div>
 
         {/* Right-side controls */}
-        <div className="editor-actions">
+        <div className="flex items-center gap-1 p-1 bg-[#161b22] border border-[#21262d] rounded-xl">
           {/* Theme toggle */}
-          <div className="theme-toggle">
+          <div className="flex gap-1">
             {THEMES.map((t) => (
               <button
                 key={t.id}
-                className={`theme-btn ${theme === t.id ? "theme-btn-active" : ""}`}
+                className={`flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0] ${
+                  theme === t.id 
+                    ? "bg-[#21262d] text-white" 
+                    : "text-[#8b949e] hover:text-white hover:bg-white/5"
+                }`}
                 onClick={() => setTheme(t.id)}
                 title={t.label}
               >
                 <span>{t.icon}</span>
-                <span className="theme-label-text">{t.label}</span>
+                <span className="hidden lg:inline">{t.label}</span>
               </button>
             ))}
           </div>
 
           {/* Stdin toggle */}
           <button
-            className={`action-btn stdin-toggle-btn ${showStdin ? "stdin-toggle-active" : ""}`}
+            className={`flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0] ${
+              showStdin ? "bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/50" : "text-[#8b949e] hover:text-white hover:bg-white/5 border border-transparent"
+            }`}
             onClick={() => setShowStdin((v) => !v)}
             title="Toggle standard input"
           >
-            ⌨ stdin
+            ⌨ <span className="hidden lg:inline">stdin</span>
           </button>
 
           {/* Reset */}
-          <button className="action-btn reset-btn" onClick={handleReset} title="Reset to starter code">
-            ↺ Reset
+          <button className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-bold text-[#8b949e] hover:text-white hover:bg-white/5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0]" onClick={handleReset} title="Reset to starter code">
+            ↺ <span className="hidden lg:inline">Reset</span>
           </button>
 
           {/* Copy */}
-          <button className="action-btn copy-btn" onClick={handleCopy} title="Copy all code">
+          <button className="flex items-center gap-2 px-3 h-9 rounded-lg text-sm font-bold text-[#8b949e] hover:text-white hover:bg-white/5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0]" onClick={handleCopy} title="Copy all code">
             {copied ? "✓ Copied!" : "⎘ Copy"}
           </button>
 
           {/* ── RUN BUTTON ── */}
           <button
-            className={`run-code-btn ${isRunning ? "run-code-btn-running" : ""}`}
+            className={`flex items-center justify-center gap-2 min-w-[80px] h-9 px-4 rounded-lg text-sm font-bold text-[#0d1117] transition-all duration-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0] shadow-[0_0_12px_rgba(0,229,160,0.2)] ${
+              isRunning ? "bg-[#00c58a]" : "bg-[#00e5a0] hover:bg-[#00c58a]"
+            }`}
             onClick={handleRunCode}
             disabled={isRunning}
             title="Run code (Ctrl+Enter)"
@@ -350,13 +361,13 @@ export default function CodeEditor({ onRunCode }) {
           >
             {isRunning ? (
               <>
-                <span className="run-spinner" />
+                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                 <span>Running…</span>
               </>
             ) : (
               <>
-                <span className="run-play-icon">▶</span>
-                <span>Run Code</span>
+                <span>▶</span>
+                <span>Run</span>
               </>
             )}
           </button>
