@@ -13,7 +13,7 @@ function Sidebar({ user, handleSignOut }) {
   ];
 
   return (
-    <aside className="w-64 bg-[#161b22] border-r border-[#21262d] flex flex-col h-full shrink-0">
+    <aside className="w-64 bg-[#161b22] border-r border-[#21262d] flex flex-col h-full shrink-0 relative z-10">
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-[#21262d]">
         <Link to="/" className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00e5a0] rounded-md">
