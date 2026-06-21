@@ -65,6 +65,7 @@ export default function PracticePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [diffFilter, setDiffFilter] = useState("All");
   const [topicFilter, setTopicFilter] = useState("All");
+  const [problems, setProblems] = useState(STATIC_PROBLEMS);
   const [selectedProblem, setSelectedProblem] = useState(STATIC_PROBLEMS[0]);
   const [activeTab, setActiveTab] = useState("description");
   const [language, setLanguage] = useState("python");
@@ -87,6 +88,15 @@ export default function PracticePage() {
     api.get("/challenges/daily")
       .then(res => setDailyChallenge(res.data))
       .catch(() => {});
+      
+    api.get("/api/problems")
+      .then(res => {
+        if (res.data && res.data.length > 0) {
+          setProblems(res.data);
+          setSelectedProblem(res.data[0]);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Load submissions when tab changes
@@ -100,9 +110,16 @@ export default function PracticePage() {
     }
   }, [activeTab]);
 
+  useEffect(() => {
+    if (selectedProblem?.baseCodeTemplates && selectedProblem.baseCodeTemplates[language]) {
+      setCode(selectedProblem.baseCodeTemplates[language]);
+    } else {
+      setCode(STARTER_CODE[language]);
+    }
+  }, [selectedProblem, language]);
+
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
-    setCode(STARTER_CODE[lang]);
   };
 
   const handleRunCode = useCallback(async () => {
@@ -111,14 +128,26 @@ export default function PracticePage() {
     setOutput(null);
     setShowOutput(true);
     try {
-      const res = await api.post("/run-code", { language, code, stdin });
+      const res = await api.post("/api/execute", { 
+        language, 
+        code, 
+        problemId: selectedProblem?._id || selectedProblem?.id 
+      });
+      
+      const v = res.data.verdict;
+      const statusId = v === "Accepted" ? 3 : v === "Wrong Answer" ? 4 : v === "Time Limit Exceeded" ? 5 : v === "Compilation Error" ? 6 : 13;
+      
+      let outText = res.data.actualOutput || "";
+      if (v === "Wrong Answer") outText = `Failed at Test Case ${res.data.testCaseIndex}\nActual Output:\n${outText}`;
+      else if (v === "Time Limit Exceeded") outText = `Time Limit Exceeded at Test Case ${res.data.testCaseIndex}`;
+
       setOutput({
-        stdout:         res.data.stdout        || "",
-        stderr:         res.data.stderr        || "",
-        compile_output: res.data.compile_output || "",
-        status:         res.data.status,
-        time:           res.data.time,
-        memory:         res.data.memory,
+        stdout:         outText,
+        stderr:         res.data.details || "",
+        compile_output: v === "Compilation Error" ? res.data.details : "",
+        status:         { id: statusId, description: v },
+        time:           res.data.time || "N/A",
+        memory:         res.data.memory || 0,
         error:          null,
       });
       // Refresh submissions after run
@@ -135,7 +164,7 @@ export default function PracticePage() {
     } finally {
       setIsRunning(false);
     }
-  }, [isRunning, language, code, stdin, activeTab]);
+  }, [isRunning, language, code, selectedProblem, activeTab]);
 
   const handleCopy = () => {
     if (editorRef.current) {
@@ -154,9 +183,9 @@ export default function PracticePage() {
 
   const statusStyle = output?.status ? getStatusStyle(output.status.id) : null;
 
-  const filteredProblems = STATIC_PROBLEMS.filter(p => {
+  const filteredProblems = problems.filter(p => {
     const matchDiff  = diffFilter  === "All" || p.difficulty === diffFilter;
-    const matchTopic = topicFilter === "All" || p.topics.includes(topicFilter);
+    const matchTopic = topicFilter === "All" || (p.topics && p.topics.includes(topicFilter));
     const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchDiff && matchTopic && matchSearch;
   });
@@ -275,13 +304,13 @@ export default function PracticePage() {
             {/* Stats footer */}
             <div className="p-3 border-t border-[#21262d] shrink-0">
               <div className="flex justify-between text-xs text-[#8b949e]">
-                <span>✅ {STATIC_PROBLEMS.filter(p => p.solved).length} solved</span>
-                <span>{STATIC_PROBLEMS.length} total</span>
+                <span>✅ {problems.filter(p => p.solved).length} solved</span>
+                <span>{problems.length} total</span>
               </div>
               <div className="mt-1.5 w-full bg-[#21262d] rounded-full h-1">
                 <div
                   className="bg-[#00e5a0] h-1 rounded-full transition-all"
-                  style={{ width: `${(STATIC_PROBLEMS.filter(p => p.solved).length / STATIC_PROBLEMS.length) * 100}%` }}
+                  style={{ width: `${(problems.filter(p => p.solved).length / Math.max(1, problems.length)) * 100}%` }}
                 />
               </div>
             </div>
@@ -319,14 +348,19 @@ export default function PracticePage() {
                           {selectedProblem.difficulty}
                         </span>
                       )}
-                      {selectedProblem?.topics.map(t => (
+                      {selectedProblem?.topics?.map(t => (
                         <span key={t} className="text-xs px-2 py-0.5 rounded bg-[#21262d] text-[#8b949e] border border-[#21262d]">{t}</span>
                       ))}
                     </div>
                   </div>
 
-                  {/* Daily challenge content */}
-                  {dailyChallenge ? (
+                  {selectedProblem?.description ? (
+                    <div className="markdown-body">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {selectedProblem.description}
+                      </ReactMarkdown>
+                    </div>
+                  ) : dailyChallenge ? (
                     <ReactMarkdown remarkPlugins={[remarkGfm]} className="markdown-body">
                       {dailyChallenge.markdown}
                     </ReactMarkdown>

@@ -15,6 +15,8 @@ const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 const userRoutes = require("./routes/userRoutes");
+const executeRoutes = require("./routes/executeRoutes");
+const problemRoutes = require("./routes/problemRoutes");
 
 const app = express();
 
@@ -80,6 +82,8 @@ app.use("/leaderboard", leaderboardRoutes);
 app.use("/courses", courseRoutes);
 app.use("/interviews", interviewRoutes);
 app.use("/user", userRoutes);
+app.use("/api/execute", executeRoutes);
+app.use("/api/problems", problemRoutes);
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ status: "Prepserve API running 🚀" }));
